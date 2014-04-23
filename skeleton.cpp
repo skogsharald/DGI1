@@ -37,8 +37,8 @@ void Interpolate( vec3 a, vec3 b, vector<vec3>& result );
 
 int main( int argc, char* argv[] )
 {	
-	t = SDL_GetTicks();
 	screen = InitializeSDL( SCREEN_WIDTH, SCREEN_HEIGHT );
+	t = SDL_GetTicks();
 	for(int i = 0; i<stars.size(); i++){
 		stars[i].x = float(rand()) / float(RAND_MAX) * (1-(-1)) -1;
 		stars[i].y = float(rand()) / float(RAND_MAX) * (1-(-1)) -1;
@@ -59,12 +59,12 @@ void Draw()
 
 	if( SDL_MUSTLOCK(screen) )
 	SDL_LockSurface(screen);
-	vec3 white(1, 1, 1);
 	for( size_t s=0; s<stars.size(); ++s )
 		{	
+			vec3 white = 0.2f * vec3(1,1,1) / (stars[s].z*stars[s].z);
 			float f = SCREEN_HEIGHT/2;
-			float u = f*(stars[s].x/stars[s].z) + SCREEN_HEIGHT/2;
-			float v = f*(stars[s].y/stars[s].z) + SCREEN_HEIGHT/2;
+			float u = f*(stars[s].x/stars[s].z) + SCREEN_HEIGHT/2.0f;
+			float v = f*(stars[s].y/stars[s].z) + SCREEN_HEIGHT/2.0f;
 			PutPixelSDL( screen, u, v, white );
 		}
 	if( SDL_MUSTLOCK(screen) )
@@ -76,6 +76,16 @@ void Update(){
 	int t2 = SDL_GetTicks();
 	float dt = float(t2-t);
 	t = t2;
+	for( int s=0; s<stars.size(); s++ )
+	{	
+
+		stars[s].z = stars[s].z - (0.0001*dt);
+		
+		if( stars[s].z <= 0 )
+			stars[s].z += 1;
+		if( stars[s].z > 1 )
+			stars[s].z -= 1;
+	}
 }
 
 void Interpolate( vec3 a, vec3 b, vector<vec3>& result){
